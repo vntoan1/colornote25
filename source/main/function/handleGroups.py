@@ -10,10 +10,8 @@ from flask import request, make_response, jsonify
 from sqlalchemy import text, and_
 import jwt
 
-
 def handleNotesGroup(idNote):
     pass
-
 
 def createGroup(owner):
     try:
@@ -44,10 +42,11 @@ def createGroup(owner):
             group_if['createAt'] = str(group.createAt)
             group_if['idOwner'] = group.idOwner
             group_if['describe'] = group.describe
+            
             return {'status': 200, 'message': 'Group was created successfully', 'group': group_if}
     except:
         return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 400)
-
+    
 
 def addMembers(idGr):
     try:
@@ -55,11 +54,14 @@ def addMembers(idGr):
 
         def getIdUser(user):
             return {"id": user.id, "role": user["role"]}
+        print(json)
+        print(json['describe'])
+        
         memberId = map(getIdUser, json["member"])
         for mem in memberId:
             member = Members(idGroup=idGr, idUser=mem.id, role=mem.role)
             db.session.add(member)
-        db.session.commit()
+        db.session.commit()        
         return {'status': 200, 'message': 'Member was added successfully'}
     except:
         return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 400)
@@ -74,6 +76,7 @@ def getAllGroup(user):
         groups = db.session.execute(text(
             'Select * from members as m inner join `groups` as g on m.idGroup=g.idGroup where m.idUser={}'.format(user)))
         data = []
+        
         for group in groups:
             group_if = {}
             group_if['idGroup'] = group.idGroup
@@ -87,6 +90,7 @@ def getAllGroup(user):
             group_if['idOwner'] = group.idOwner
             group_if['describe'] = group.describe
             data.append(group_if)
+        print("Error:", str(getAllGroup))
         return {'status': 200, 'data': data}
 
 
@@ -202,6 +206,10 @@ def deleteMessages(idGroup,id,idMes):
             db.session.add(group)
             db.session.commit()
             return jsonify({'status': 200, 'message': 'message has been recovered'})
+        # except Exception as e:
+        #     print(e)
+        #     return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 400)
         except Exception as e:
-            print(e)
-            return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 400)
+            # Log the error message
+            print("Error:", str(e))
+            return {'status': 500, 'message': str(e)} 
