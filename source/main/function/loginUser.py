@@ -105,7 +105,7 @@ def cofimtoken():
             return("Token hết hạn")
         except jwt.InvalidTokenError:
             return("Token không hợp lệ")
-def change():
+def change(json):
     if request.method == 'PATCH':
         json_data = request.json
         user = Users.query.filter(Users.password_hash == json_data["password"]).first()

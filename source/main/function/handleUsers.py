@@ -173,6 +173,7 @@ def changeProfile(id):
         new_link_avt = data.get('AvtProfile')
         avatar = data.get('Avarta')
         name = data.get("name")
+        print(name)
         try:
             if ((new_link_avt)):
                 user.linkAvtprofile = data.get('AvtProfile')
@@ -381,8 +382,12 @@ def get_list_user_online():
             'message': 'List user online',
             'users': users_online
         })
-    except Exception as e:
-        return jsonify({
-            'status': 500,
-            'message': f'Something went wrong! {e}'
-        }), 500
+    # except Exception as e:
+    #     return jsonify({
+    #         'status': 500,
+    #         'message': f'Something went wrong! {e}'
+    #     }), 500
+    except Exception as e:  
+            # Log the error message
+        print("Error:", str(e))
+        return {'status': 500, 'message': str(e)} 

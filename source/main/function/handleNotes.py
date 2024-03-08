@@ -358,12 +358,12 @@ def handleNotes(param):
             return {"notes": getNotes(notes)}
 
         if request.method == "POST":
-            print("SONPRO_PHAN_POST___handleNotes___" + str(request.json))
+            # print("SONPRO_PHAN_POST___handleNotes___" + str(request.json))
             try:
                 json = request.json
                 nbnote = Nbnotes.query.filter(Nbnotes.idUser == param).first()
                 note_lock = False
-                print(json)
+                # print(json)
                 color = json["color"]
                 date_dueAt = None
                 if json["dueAt"]:

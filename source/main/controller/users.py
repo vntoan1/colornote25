@@ -122,11 +122,12 @@ def forgotPasswork():
                 )
                 user.password_hash = (str(random_number))
                 db.session.commit()
+                # print("Error:", str(forgotPasswork))
                 return {'status': 200, 'message': "Please check your email or spam"}
             else:
                 return make_response(jsonify({'status': 400, 'message': 'Account or gmail no exists'}), 400)
         else:
-            return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 400)
+            return make_response(jsonify({'status': 400, 'message': 'Request fail. Please try again'}), 500)
 
     except Exception as e:
         print(e)
@@ -168,6 +169,7 @@ def changePassword(id):
                     )
                     return {'status': 200, 'message': "Please check your email or spam"}
                 else:
+                    
                     return "password is not correct"
             else:
                 return "Gmail is not correct"
@@ -179,9 +181,14 @@ def changePassword(id):
 @app.route('/confirm_change/<token>')
 def confirmgmail(token):
     try:
-        json = s.loads(token, salt=app.config["SECURITY_PASSWORD_SALT"], max_age=600)
+        json = s.loads(token, salt=app.config["SECURITY_PASSWORD_SALT"], max_age=2000)
+        print(json)
         change(json)
-        return "Updated password succsess "
-    except Exception as e:
-        print(e)
-        return "Your link was expired!!!!."
+        return "Updated password succsess "        
+    # except Exception as e:
+    #     print(e)
+    #     return "Your link was expired!!!!."
+    except Exception as e:  
+            # Log the error message
+        print("Error:", str(e))
+        return {'status': 500, 'message': str(e)} 
