@@ -346,19 +346,18 @@ def handleNotes(param):
 
     try:
         if request.method == "GET":
-
+            
             notes = (
                 db.session.query(Notes, Datas)
                 .join(Datas, Datas.idNote == Notes.idNote)
-                .filter(Notes.inArchived == 1 and Notes.idUser == param)
+                .filter(Notes.inArchived == 1, Notes.idUser == param) # khong nhận and mà dùng bằng dấu ,
                 .order_by(desc(Notes.updateAt))
                 .all()
             )
-
             return {"notes": getNotes(notes)}
 
         if request.method == "POST":
-            # print("SONPRO_PHAN_POST___handleNotes___" + str(request.json))
+            print("SONPRO_PHAN_POST___handleNotes___" + str(request.json))
             try:
                 json = request.json
                 nbnote = Nbnotes.query.filter(Nbnotes.idUser == param).first()
@@ -458,7 +457,6 @@ def handleNotes(param):
                             linkNoteShare=json["linkNoteShare"],
                             notePublic=0,
                         )
-                print("SONPIPI_POST_NOTES_", str(note))
                 db.session.add(note)
                 if nbnote:
                     if note.notePublic == 1:
@@ -469,6 +467,7 @@ def handleNotes(param):
                             idUser=param, nbnotes=1
                         )  # Create a new Nbnotes record if it doesn't exist
                         db.session.add(nbnote)
+                print("SONPIPI_POST_NOTES_", str(note))
                 # print("1")
                 # if nbnote.nbnotes:
                 #     nbnote.nbnotes = (int(nbnote.nbnotes) + 1)
@@ -588,7 +587,7 @@ def handleNotes(param):
         if request.method == "DELETE":
             try:
 
-                note_query = db.session.query(Notes).filter_by(idNote=param).first()
+                note_query = db.session.query(Notes).filter_by(idNote = param).first()
                 note_query.inArchived = False
                 note_lock = False
                 if note_query.lock:
@@ -652,12 +651,13 @@ def delTruncNote(id):
 @cross_origin()
 def trashGet(idUser):
     if request.method == "GET":
-        notes = db.session.execute(
-            text(
-                "Select * from (select * from notes where notes.idUser={} and notes.inArchived=0) as b inner join datas on b.idNote=datas.idNote".format(
-                    idUser
-                )
-            )
+        
+        notes = (
+            db.session.query(Notes, Datas)
+            .join(Datas, Datas.idNote == Notes.idNote)
+            .filter(Notes.inArchived == 0, Notes.idUser == idUser) # khong nhận and mà dùng bằng dấu ,
+            .order_by(desc(Notes.updateAt))
+            .all()
         )
 
         return {"notes": getNotes(notes)}
